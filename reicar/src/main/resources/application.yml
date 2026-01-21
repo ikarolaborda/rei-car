@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: ideasystem
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/ideasystem?useTimezone=true&serverTimezone=UTC
+    username: ${MYSQLUSER}
+    password: ${MYSQLPASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+    show-sql: false
+
+    open-in-view: false
+    #spring.jpa.open-in-view
