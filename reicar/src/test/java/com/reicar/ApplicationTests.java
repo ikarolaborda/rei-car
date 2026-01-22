@@ -1,4 +1,4 @@
-package com.ideasystem;
+package com.reicar;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

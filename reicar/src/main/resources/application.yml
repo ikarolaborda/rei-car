@@ -3,7 +3,7 @@ spring:
     name: ideasystem
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/ideasystem?useTimezone=true&serverTimezone=UTC
+    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/reicar?useTimezone=true&serverTimezone=UTC
     username: ${MYSQLUSER}
     password: ${MYSQLPASSWORD}
   jpa:

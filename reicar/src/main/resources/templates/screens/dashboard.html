@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reicar - Dashboard de Gestão</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --reicar-blue: #0a1d37; 
+            --reicar-blue-light: #162d4d;
+            --reicar-gold: #fbc02d; 
+            --reicar-gold-hover: #ffca28;
+        }
+
+        body { background-color: #f4f7f9; font-family: 'Inter', sans-serif; }
+        
+        /* Sidebar */
+        .sidebar { background-color: var(--reicar-blue); min-height: 100vh; color: white; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+        .logo-img { max-width: 100%; height: auto; object-fit: contain; }
+        .nav-link { border-radius: 8px; margin: 4px 0; transition: all 0.2s; color: rgba(255,255,255,0.8); }
+        .nav-link:hover { background-color: var(--reicar-blue-light); color: var(--reicar-gold) !important; }
+        .nav-link.active { background-color: var(--reicar-gold); color: var(--reicar-blue) !important; font-weight: 600; }
+
+        /* KPI Cards */
+        .kpi-card { border: none; border-left: 5px solid var(--reicar-blue); transition: transform 0.2s; }
+        .kpi-card:hover { transform: translateY(-3px); }
+        .kpi-icon { font-size: 2rem; color: var(--reicar-blue); opacity: 0.3; }
+
+        /* Triagem */
+        .card-selection { transition: all 0.3s ease; border: none; }
+        .card-selection:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; border-bottom: 4px solid var(--reicar-gold); }
+        .btn-reicar-gold { background-color: var(--reicar-gold); color: var(--reicar-blue); font-weight: 700; border: none; }
+        .btn-reicar-gold:hover { background-color: var(--reicar-gold-hover); transform: scale(1.02); }
+
+        /* Tabela */
+        .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .status-badge { font-size: 0.75rem; padding: 5px 12px; border-radius: 50px; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar p-3 text-center position-fixed">
+            <div class="p-2 mb-4">
+                <img th:src="@{/images/logo_pequena.png}" alt="Logo Reicar" class="logo-img">
+            </div>
+            <hr class="text-secondary">
+            <ul class="nav flex-column text-start">
+                <li class="nav-item"><a href="#" class="nav-link active"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-file-earmark-text me-2"></i> Ordens de Serviço</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-people me-2"></i> Clientes</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-box-seam me-2"></i> Estoque</a></li>
+            </ul>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4" style="margin-left: 16.6%;">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">Painel de Controlo</h2>
+                <div class="input-group w-25 shadow-sm">
+                    <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control border-0" placeholder="Procurar Placa ou OS...">
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card kpi-card shadow-sm p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div><h6 class="text-muted">OS em Aberto</h6><h3 class="fw-bold">12</h3></div>
+                            <i class="bi bi-clock-history kpi-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card kpi-card shadow-sm p-3" style="border-left-color: #ffc107;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div><h6 class="text-muted">Aguardando Peças</h6><h3 class="fw-bold">04</h3></div>
+                            <i class="bi bi-cart-dash kpi-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card kpi-card shadow-sm p-3" style="border-left-color: #198754;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div><h6 class="text-muted">Finalizadas Hoje</h6><h3 class="fw-bold">08</h3></div>
+                            <i class="bi bi-check2-circle kpi-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card kpi-card shadow-sm p-3" style="border-left-color: #0d6efd;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div><h6 class="text-muted">Faturamento (Mês)</h6><h4 class="fw-bold">R$ 14.520</h4></div>
+                            <i class="bi bi-currency-dollar kpi-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-5 justify-content-center">
+                <div class="col-md-4">
+                    <div class="card card-selection shadow-sm p-4 text-center">
+                        <i class="bi bi-tools text-primary mb-3" style="font-size: 3rem;"></i>
+                        <h4>Mecânica Geral</h4>
+                        <p class="text-muted small">Suspensão, Motor, Travões e Revisão.</p>
+                        <button class="btn btn-reicar-gold w-100 py-2">NOVA OS MECÂNICA</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card card-selection shadow-sm p-4 text-center">
+                        <i class="bi bi-disc text-primary mb-3" style="font-size: 3rem;"></i>
+                        <h4>Borracharia</h4>
+                        <p class="text-muted small">Pneus, Alinhamento e Balanceamento.</p>
+                        <button class="btn btn-reicar-gold w-100 py-2">NOVA OS BORRACHARIA</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Atividades Recentes</h5>
+                    <a href="#" class="btn btn-sm btn-outline-secondary">Ver Todas</a>
+                </div>
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>OS nº</th>
+                            <th>Cliente</th>
+                            <th>Veículo</th>
+                            <th>Setor</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#0734</td>
+                            <td>João Silva</td>
+                            <td>Toyota Corolla (ABC-1234)</td>
+                            <td><span class="badge bg-light text-dark">Mecânica</span></td>
+                            <td><span class="status-badge bg-warning text-dark">Em Execução</span></td>
+                            <td><button class="btn btn-sm btn-light"><i class="bi bi-eye"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>#0733</td>
+                            <td>Maria Oliveira</td>
+                            <td>Fiat Uno (XYZ-9876)</td>
+                            <td><span class="badge bg-light text-dark">Borracharia</span></td>
+                            <td><span class="status-badge bg-success text-white">Finalizada</span></td>
+                            <td><button class="btn btn-sm btn-light"><i class="bi bi-eye"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
