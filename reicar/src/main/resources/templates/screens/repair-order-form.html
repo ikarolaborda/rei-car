@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reicar - Nova OS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root { --reicar-blue: #0a1d37; --reicar-gold: #fbc02d; }
+        body { background-color: #f4f7f9; }
+        .card-header-reicar { background-color: var(--reicar-blue); color: white; font-weight: bold; }
+        .section-title { border-left: 4px solid var(--reicar-gold); padding-left: 10px; margin-bottom: 20px; color: var(--reicar-blue); }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <form th:action="@{/os/salvar}" method="post">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header card-header-reicar d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-earmark-plus me-2"></i> NOVA ORDEM DE SERVIÇO</span>
+                <span class="badge bg-light text-dark" th:text="${setor}">MECÂNICA</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Número da OS</label>
+                        <input type="text" class="form-control bg-light" value="0735" readonly>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Data</label>
+                        <input type="date" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Status Inicial</label>
+                        <select class="form-select border-warning">
+                            <option value="ORCAMENTO">Orçamento</option>
+                            <option value="ABERTA">Aberta / Aguardando Início</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="section-title">Dados do Cliente</h5>
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label class="form-label">Nome Completo</label>
+                        <input type="text" class="form-control" placeholder="Ex: Kerolayne Fernandes">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Telefone / WhatsApp</label>
+                        <input type="text" class="form-control" placeholder="(61) 99999-9999">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Cidade</label>
+                        <input type="text" class="form-control" value="Sol Nascente">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Estado</label>
+                        <input type="text" class="form-control" value="DF">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Endereço</label>
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="section-title">Discriminação de Peças e Serviços</h5>
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light text-center">
+                    <tr>
+                        <th style="width: 10%;">Quant.</th>
+                        <th>Descrição</th>
+                        <th style="width: 20%;">Preço Unit. (R$)</th>
+                        <th style="width: 20%;">Total (R$)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="number" class="form-control text-center" value="1"></td>
+                        <td><input type="text" class="form-control" placeholder="Ex: Troca de Óleo 5W30"></td>
+                        <td><input type="number" class="form-control text-end" placeholder="0,00"></td>
+                        <td><input type="number" class="form-control text-end" readonly></td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold">VALOR TOTAL:</td>
+                        <td class="bg-light fw-bold text-end">R$ 0,00</td>
+                    </tr>
+                    </tfoot>
+                </table>
+                <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-circle me-1"></i> Adicionar Item</button>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <a th:href="@{/dashboard}" class="btn btn-secondary px-4">Cancelar</a>
+            <button type="submit" class="btn btn-success px-5 fw-bold">SALVAR ORDEM DE SERVIÇO</button>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

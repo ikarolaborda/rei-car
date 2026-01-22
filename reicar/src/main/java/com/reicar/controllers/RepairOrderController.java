@@ -1,0 +1,15 @@
+package com.reicar.controllers;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/ro")
+public class RepairOrderController {
+
+    @GetMapping("/register")
+    public String  getViewForm(){
+        return "screens/repair-order-form";
+    }
+}

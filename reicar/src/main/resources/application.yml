@@ -1,17 +1,25 @@
 spring:
   application:
-    name: ideasystem
+    name: reicar-management-system # Nome alinhado ao projeto da Auto Peças 211
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/reicar?useTimezone=true&serverTimezone=UTC
     username: ${MYSQLUSER}
     password: ${MYSQLPASSWORD}
+
+  # Configuração do Flyway para gerenciar as migrations
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
   jpa:
     hibernate:
-      ddl-auto: update
+      # Padrão de Excelência: Hibernate não altera o banco, o Flyway sim.
+      ddl-auto: validate
+    show-sql: true # Útil em desenvolvimento para validar as queries geradas
     properties:
       hibernate:
-    show-sql: false
-
-    open-in-view: false
-    #spring.jpa.open-in-view
+        format_sql: true # Melhora a leitura do SQL no console
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    open-in-view: false # Evita o anti-padrão Open Session in View (OSIV)
