@@ -1,10 +1,12 @@
 package com.reicar.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Entity
+@Data
 @Table(name = "service_items")
 public class ServiceItem {
     @Id
