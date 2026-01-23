@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/ro")
-public class RepairOrderController {
+public class ServiceOrderController {
 
     @GetMapping("/register")
     public String  getViewForm(){
-        return "screens/repair-order-form";
+        return "screens/service-order-form";
     }
 }
