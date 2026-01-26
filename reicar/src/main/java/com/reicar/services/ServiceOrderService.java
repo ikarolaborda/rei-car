@@ -5,6 +5,7 @@ import com.reicar.entities.*;
 import com.reicar.entities.enums.ServiceStatus;
 import com.reicar.repositories.CustomerRepository;
 import com.reicar.repositories.ServiceOrderRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class ServiceOrderService {
 
     public List<ServiceOrder> findAll() {
         return repository.findAllWithCustomer();
+    }
+
+    public ServiceOrder findById(Long id){
+        return repository.findByIdWithDetails(id).orElseThrow(() -> new EntityNotFoundException("Ordem de serviço não encotrada: id = "+id));
     }
 
     @Transactional
