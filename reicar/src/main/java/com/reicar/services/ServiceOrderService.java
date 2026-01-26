@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,14 +19,24 @@ import java.util.List;
 public class ServiceOrderService {
 
     private final ServiceOrderRepository repository;
-    private final CustomerRepository customerRepository; // Necessário para vincular o cliente
+    private final CustomerRepository customerRepository;
+
+    /**
+     * Utiliza o novo método do repositório com JOIN FETCH
+     * para evitar LazyInitializationException no Dashboard.
+     */
+    public List<ServiceOrder> findAll() {
+        return repository.findAllWithCustomer();
+    }
 
     @Transactional
     public ServiceOrder saveFromDto(ServiceOrderDTO dto) {
-        // 1. Criar a instância correta ? mechanic : tire shop
-        ServiceOrder order = createEntityByType(dto.type());
+        // 1. Instanciação
+        ServiceOrder order = "MECHANIC".equalsIgnoreCase(dto.type())
+                ? new MechanicServiceOrder()
+                : new TireShopServiceOrder();
 
-        // 2. Mapear dados do cliente (ou buscar se já existir)
+        // 2. Persistência do Cliente
         Customer customer = new Customer();
         customer.setName(dto.customerName());
         customer.setPhone(dto.customerPhone());
@@ -33,13 +44,13 @@ public class ServiceOrderService {
         customer.setState(dto.customerState());
         customerRepository.save(customer);
 
-        // 3. Configurar a Ordem
+        // 3. Dados Básicos
         order.setCustomer(customer);
         order.setOrderNumber(generateNextOrderNumber());
         order.setEntryDate(LocalDate.now());
         order.setStatus(ServiceStatus.OPEN);
 
-        // 4. Mapear campos específicos usando pattern matching (Java 17+)
+        // 4. Atribuição de campos específicos (Pattern Matching)
         if (order instanceof MechanicServiceOrder mso) {
             mso.setTechnicalDiagnosis(dto.technicalDiagnosis());
             mso.setVehicleKm(dto.vehicleKm());
@@ -47,7 +58,7 @@ public class ServiceOrderService {
             tso.setTirePosition(dto.tirePosition());
         }
 
-        // 5. Mapear Itens do Record para a Entidade
+        // 5. Mapeamento de Itens
         List<ServiceItem> entityItems = dto.items().stream()
                 .map(itemDto -> {
                     ServiceItem item = new ServiceItem();
@@ -57,24 +68,26 @@ public class ServiceOrderService {
                     item.setServiceOrder(order);
                     return item;
                 }).toList();
-
         order.setItems(entityItems);
+
+        // 6. Cálculo do Total (Mantido no Service conforme solicitado)
         calculateTotal(order);
 
         return repository.save(order);
     }
 
-    private ServiceOrder createEntityByType(String type) {
-        return "MECHANIC".equalsIgnoreCase(type)
-                ? new MechanicServiceOrder()
-                : new TireShopServiceOrder();
-    }
-
     private void calculateTotal(ServiceOrder order) {
+        BigDecimal markup = new BigDecimal("1.30");
+
         BigDecimal total = order.getItems().stream()
-                .map(item -> item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .map(item -> {
+                    BigDecimal subtotal = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+                    // Aplica 30% apenas se for mecânica
+                    return (order instanceof MechanicServiceOrder) ? subtotal.multiply(markup) : subtotal;
+                })
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        order.setTotalValue(total);
+
+        order.setTotalValue(total.setScale(2, RoundingMode.HALF_UP));
     }
 
     private String generateNextOrderNumber() {

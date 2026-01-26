@@ -16,11 +16,11 @@ public class ServiceOrderController {
     private final ServiceOrderService service;
 
     @GetMapping("/register")
-    public String showForm(@RequestParam String type, Model model) {
+    public String showForm(@RequestParam(name = "type", required = false) String type, Model model) {
         // Prepara o formulário baseado no tipo (MECHANIC ou TIRE_SHOP)
         model.addAttribute("type", type);
         model.addAttribute("order", new ServiceOrderDTO());
-        return "service-order-form";
+        return "screens/service-order-form";
     }
 
     @PostMapping("/register")
@@ -28,6 +28,6 @@ public class ServiceOrderController {
         service.saveFromDto(dto);
         redirectAttributes.addFlashAttribute("message", "Ordem de Serviço salva com sucesso!");
 
-        return "redirect:/dash";
+        return "redirect:/dashboard";
     }
 }

@@ -16,28 +16,33 @@
 <body>
 
 <div class="container py-5">
-    <form th:action="@{/os/salvar}" method="post">
+    <form th:action="@{/so/register}" method="post">
+
+        <input type="hidden" name="type" th:value="${type}">
+
         <div class="card shadow-sm mb-4">
             <div class="card-header card-header-reicar d-flex justify-content-between align-items-center">
                 <span><i class="bi bi-file-earmark-plus me-2"></i> NOVA ORDEM DE SERVIÇO</span>
-                <span class="badge bg-light text-dark" th:text="${setor}">MECÂNICA</span>
+                <span class="badge bg-light text-dark" th:text="${type == 'MECHANIC' ? 'MECÂNICA' : 'BORRACHARIA'}">SETOR</span>
             </div>
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Número da OS</label>
-                        <input type="text" class="form-control bg-light" value="0735" readonly>
+                        <input type="text" class="form-control bg-light" value="GERADO AUTOMATICAMENTE" readonly>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Data</label>
-                        <input type="date" class="form-control" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}">
+                        <input type="date" class="form-control bg-light" th:value="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" readonly>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Status Inicial</label>
-                        <select class="form-select border-warning">
-                            <option value="ORCAMENTO">Orçamento</option>
-                            <option value="ABERTA">Aberta / Aguardando Início</option>
-                        </select>
+
+                    <div th:if="${type == 'MECHANIC'}" class="col-md-3">
+                        <label class="form-label fw-bold">KM Veículo</label>
+                        <input type="number" name="vehicleKm" class="form-control">
+                    </div>
+                    <div th:if="${type == 'TIRE_SHOP'}" class="col-md-3">
+                        <label class="form-label fw-bold">Posição do Pneu</label>
+                        <input type="text" name="tirePosition" class="form-control" placeholder="Ex: Dianteiro Dir.">
                     </div>
                 </div>
             </div>
@@ -49,23 +54,19 @@
                 <div class="row g-3">
                     <div class="col-md-8">
                         <label class="form-label">Nome Completo</label>
-                        <input type="text" class="form-control" placeholder="Ex: Kerolayne Fernandes">
+                        <input type="text" name="customerName" class="form-control" required>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Telefone / WhatsApp</label>
-                        <input type="text" class="form-control" placeholder="(61) 99999-9999">
+                        <input type="text" name="customerPhone" class="form-control">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Cidade</label>
-                        <input type="text" class="form-control" value="Sol Nascente">
+                        <input type="text" name="customerCity" class="form-control" value="Sol Nascente">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">Estado</label>
-                        <input type="text" class="form-control" value="DF">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Endereço</label>
-                        <input type="text" class="form-control">
+                        <input type="text" name="customerState" class="form-control" value="DF">
                     </div>
                 </div>
             </div>
@@ -74,41 +75,126 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <h5 class="section-title">Discriminação de Peças e Serviços</h5>
-                <table class="table table-bordered align-middle">
+                <table class="table table-bordered align-middle" id="itemsTable">
                     <thead class="table-light text-center">
                     <tr>
                         <th style="width: 10%;">Quant.</th>
                         <th>Descrição</th>
                         <th style="width: 20%;">Preço Unit. (R$)</th>
                         <th style="width: 20%;">Total (R$)</th>
+                        <th style="width: 5%;"></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td><input type="number" class="form-control text-center" value="1"></td>
-                        <td><input type="text" class="form-control" placeholder="Ex: Troca de Óleo 5W30"></td>
-                        <td><input type="number" class="form-control text-end" placeholder="0,00"></td>
-                        <td><input type="number" class="form-control text-end" readonly></td>
+                    <tr class="item-row">
+                        <td><input type="number" name="items[0].quantity" class="form-control text-center input-qty" value="1" min="1"></td>
+                        <td><input type="text" name="items[0].description" class="form-control" placeholder="Descrição do item" required></td>
+                        <td><input type="number" name="items[0].unitPrice" class="form-control text-end input-price" step="0.01" value="0.00"></td>
+                        <td><input type="text" class="form-control text-end row-total" value="0,00" readonly></td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm border-0" onclick="removeRow(this)"><i class="bi bi-trash"></i></button>
+                        </td>
                     </tr>
                     </tbody>
                     <tfoot>
                     <tr>
                         <td colspan="3" class="text-end fw-bold">VALOR TOTAL:</td>
-                        <td class="bg-light fw-bold text-end">R$ 0,00</td>
+                        <td class="bg-light fw-bold text-end" id="grandTotal">R$ 0,00</td>
+                        <td></td>
                     </tr>
                     </tfoot>
                 </table>
-                <button type="button" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-circle me-1"></i> Adicionar Item</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="addRow()"><i class="bi bi-plus-circle me-1"></i> Adicionar Item</button>
             </div>
         </div>
 
         <div class="d-flex justify-content-end gap-2">
-            <a th:href="@{/dashboard}" class="btn btn-secondary px-4">Cancelar</a>
+            <a th:href="@{/dash}" class="btn btn-secondary px-4">Cancelar</a>
             <button type="submit" class="btn btn-success px-5 fw-bold">SALVAR ORDEM DE SERVIÇO</button>
         </div>
     </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let rowIndex = 1;
+
+    function addRow() {
+        const tbody = document.querySelector("#itemsTable tbody");
+        const newRow = document.createElement("tr");
+        newRow.classList.add("item-row");
+
+        newRow.innerHTML = `
+            <td><input type="number" name="items[${rowIndex}].quantity" class="form-control text-center input-qty" value="1" min="1"></td>
+            <td><input type="text" name="items[${rowIndex}].description" class="form-control" required></td>
+            <td><input type="number" name="items[${rowIndex}].unitPrice" class="form-control text-end input-price" step="0.01" value="0.00"></td>
+            <td><input type="text" class="form-control text-end row-total" value="0,00" readonly></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-danger btn-sm border-0" onclick="removeRow(this)"><i class="bi bi-trash"></i></button>
+            </td>
+        `;
+
+        tbody.appendChild(newRow);
+        rowIndex++;
+        attachListeners();
+    }
+
+    function removeRow(btn) {
+        const row = btn.closest('tr');
+        if (document.querySelectorAll('.item-row').length > 1) {
+            row.remove();
+            reindexRows();
+            calculateGrandTotal();
+        }
+    }
+
+    function reindexRows() {
+        const rows = document.querySelectorAll(".item-row");
+        rowIndex = 0;
+        rows.forEach(row => {
+            row.querySelector(".input-qty").name = `items[${rowIndex}].quantity`;
+            row.querySelector("input[name*='description']").name = `items[${rowIndex}].description`;
+            row.querySelector(".input-price").name = `items[${rowIndex}].unitPrice`;
+            rowIndex++;
+        });
+    }
+
+    function calculateGrandTotal() {
+        let total = 0;
+        // Captura o tipo de serviço do campo oculto que criamos
+        const type = document.querySelector('input[name="type"]').value;
+        const markup = (type === 'MECHANIC') ? 1.30 : 1.0;
+
+        document.querySelectorAll(".item-row").forEach(row => {
+            const qty = parseFloat(row.querySelector(".input-qty").value) || 0;
+            const price = parseFloat(row.querySelector(".input-price").value) || 0;
+
+            // Calcula o subtotal com o acréscimo de 30%
+            const subtotal = (qty * price) * markup;
+
+            // Atualiza o campo de total da linha
+            row.querySelector(".row-total").value = subtotal.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            total += subtotal;
+        });
+
+        // Atualiza o Valor Total no rodapé da tabela
+        document.getElementById("grandTotal").innerText = "R$ " + total.toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    function attachListeners() {
+        document.querySelectorAll(".input-qty, .input-price").forEach(input => {
+            input.oninput = calculateGrandTotal;
+        });
+    }
+
+    attachListeners();
+</script>
+
 </body>
 </html>

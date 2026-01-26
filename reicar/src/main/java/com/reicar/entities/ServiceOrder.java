@@ -29,7 +29,7 @@ public abstract class ServiceOrder {
     @Enumerated(EnumType.STRING)
     private ServiceStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
