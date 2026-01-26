@@ -6,154 +6,177 @@
     <title>Reicar - Dashboard de Gestão</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --reicar-blue: #0a1d37; 
+            --reicar-blue: #0a1d37;
             --reicar-blue-light: #162d4d;
-            --reicar-gold: #fbc02d; 
+            --reicar-gold: #fbc02d;
             --reicar-gold-hover: #ffca28;
+            --status-open: #fbc02d;
+            --status-done: #198754;
         }
 
         body { background-color: #f4f7f9; font-family: 'Inter', sans-serif; }
-        
-        /* Sidebar */
-        .sidebar { background-color: var(--reicar-blue); min-height: 100vh; color: white; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
-        .logo-img { max-width: 100%; height: auto; object-fit: contain; }
-        .nav-link { border-radius: 8px; margin: 4px 0; transition: all 0.2s; color: rgba(255,255,255,0.8); }
-        .nav-link:hover { background-color: var(--reicar-blue-light); color: var(--reicar-gold) !important; }
-        .nav-link.active { background-color: var(--reicar-gold); color: var(--reicar-blue) !important; font-weight: 600; }
 
-        /* KPI Cards */
-        .kpi-card { border: none; border-left: 5px solid var(--reicar-blue); transition: transform 0.2s; }
-        .kpi-card:hover { transform: translateY(-3px); }
-        .kpi-icon { font-size: 2rem; color: var(--reicar-blue); opacity: 0.3; }
+        /* Sidebar Colapsável */
+        .sidebar { background-color: var(--reicar-blue); min-height: 100vh; color: white; transition: all 0.3s; z-index: 1000; }
+        .nav-link { border-radius: 8px; margin: 4px 0; color: rgba(255,255,255,0.8); transition: 0.2s; }
+        .nav-link:hover, .nav-link.active { background-color: var(--reicar-gold); color: var(--reicar-blue) !important; font-weight: 600; }
 
-        /* Triagem */
-        .card-selection { transition: all 0.3s ease; border: none; }
-        .card-selection:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; border-bottom: 4px solid var(--reicar-gold); }
-        .btn-reicar-gold { background-color: var(--reicar-gold); color: var(--reicar-blue); font-weight: 700; border: none; }
-        .btn-reicar-gold:hover { background-color: var(--reicar-gold-hover); transform: scale(1.02); }
+        /* KPI Cards Premium */
+        .kpi-card { border: none; border-radius: 12px; transition: transform 0.2s; position: relative; overflow: hidden; }
+        .kpi-card:hover { transform: translateY(-5px); }
+        .kpi-value { font-size: 1.8rem; font-weight: 800; }
+        .kpi-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Tabela */
-        .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .status-badge { font-size: 0.75rem; padding: 5px 12px; border-radius: 50px; }
+        /* Triagem Tátil */
+        .card-selection { cursor: pointer; border: 2px solid transparent; transition: 0.3s; border-radius: 15px; }
+        .card-selection:hover { border-color: var(--reicar-gold); background-color: #fff; transform: scale(1.03); }
+        .btn-main { font-size: 1.1rem; letter-spacing: 1px; }
+
+        /* Tabela de Alta Visibilidade */
+        .table-container { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .table thead { background-color: var(--reicar-blue); color: white; }
+        .status-badge { font-weight: 700; text-transform: uppercase; padding: 6px 15px; border-radius: 8px; font-size: 0.7rem; }
+
+        .value-service { color: #198754; font-weight: 700; } /* Cor para Mão de Obra */
+        .value-total { color: var(--reicar-blue); font-weight: 800; }
     </style>
 </head>
 <body>
 
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar p-3 text-center position-fixed">
-            <div class="p-2 mb-4">
-                <img th:src="@{/images/logo_pequena.png}" alt="Logo Reicar" class="logo-img">
+        <nav class="col-md-2 d-none d-md-block sidebar p-3 text-center position-fixed shadow">
+            <div class="mb-5 mt-3">
+                <img th:src="@{/images/logo_pequena.png}" alt="Reicar" class="img-fluid" style="max-height: 50px;">
             </div>
-            <hr class="text-secondary">
             <ul class="nav flex-column text-start">
-                <li class="nav-item"><a th:href="@{/dash}" class="nav-link active"><i class="bi bi-grid-1x2-fill me-2"></i> Dashboard</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-file-earmark-text me-2"></i> Ordens de Serviço</a></li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-people me-2"></i> Clientes</a></li>
+                <li class="nav-item"><a th:href="@{/dash}" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-tools me-2"></i> Oficinas</a></li>
+                <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-cash-stack me-2"></i> Financeiro</a></li>
             </ul>
         </nav>
 
         <main class="col-md-10 ms-sm-auto px-md-4 py-4" style="margin-left: 16.6%;">
 
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold">Painel de Controlo</h2>
-                <div class="input-group w-25 shadow-sm">
-                    <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control border-0" placeholder="Procurar OS...">
+                <div>
+                    <h2 class="fw-bold mb-0">Painel de Gestão</h2>
+                    <p class="text-muted">Bem-vindo, aqui está o resumo da sua oficina hoje.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-white shadow-sm border-0"><i class="bi bi-printer me-2"></i>Relatórios</button>
+                    <div class="input-group shadow-sm border-0">
+                        <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control border-0" placeholder="Buscar OS...">
+                    </div>
                 </div>
             </div>
 
-            <div class="row mb-4">
+            <div class="row g-3 mb-4">
                 <div class="col-md-3">
-                    <div class="card kpi-card shadow-sm p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div><h6 class="text-muted">Total de OS</h6><h3 class="fw-bold" th:text="${orders.size()}">0</h3></div>
-                            <i class="bi bi-clock-history kpi-icon"></i>
-                        </div>
+                    <div class="card kpi-card shadow-sm p-3 border-start border-primary border-5">
+                        <span class="kpi-label text-muted">Volume de OS</span>
+                        <div class="kpi-value" th:text="${orders.size()}">0</div>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card kpi-card shadow-sm p-3" style="border-left-color: #198754;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div><h6 class="text-muted">Abertas Hoje</h6><h3 class="fw-bold" th:text="${orders.size()}">0</h3></div>
-                            <i class="bi bi-check2-circle kpi-icon"></i>
+                    <div class="card kpi-card shadow-sm p-3 border-start border-info border-5">
+                        <span class="kpi-label text-muted">Venda de Peças (Bruto)</span>
+                        <div class="kpi-value text-info">R$ 1.540,00</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card kpi-card shadow-sm p-3 border-start border-success border-5">
+                        <span class="kpi-label text-muted">Mão de Obra / Serviços</span>
+                        <div class="kpi-value text-success" th:text="'R$ ' + ${#numbers.formatDecimal(#aggregates.sum(orders.![serviceValue]) ?: 0.0, 1, 'POINT', 2, 'COMMA')}"></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card kpi-card shadow-sm p-3 bg-reicar-blue text-white">
+                        <span class="kpi-label text-white-50">Faturamento Total</span>
+                        <div class="kpi-value" style="color: var(--reicar-gold);" th:text="'R$ ' + ${#numbers.formatDecimal(#aggregates.sum(orders.![totalValue]) ?: 0.0, 1, 'POINT', 2, 'COMMA')}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card card-selection shadow-sm p-4 text-center border-0">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                            <i class="bi bi-gear-wide-connected text-primary fs-1"></i>
                         </div>
+                        <h4 class="fw-bold">Nova Mecânica</h4>
+                        <p class="text-muted small px-5">Suspensão, Motor, Diagnósticos e Revisões Geral.</p>
+                        <a th:href="@{/so/register(type='MECHANIC')}" class="btn btn-reicar-gold btn-main w-100 py-3 rounded-pill shadow">ABRIR OS MECÂNICA</a>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card kpi-card shadow-sm p-3" style="border-left-color: #0d6efd;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted">Faturamento Estimado (Com 30%)</h6>
-                                <h4 class="fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(#aggregates.sum(orders.![totalValue]) ?: 0.0, 1, 'POINT', 2, 'COMMA')}">R$ 0,00</h4>
-                            </div>
-                            <i class="bi bi-currency-dollar kpi-icon"></i>
+                    <div class="card card-selection shadow-sm p-4 text-center border-0">
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3 d-inline-block mb-3">
+                            <i class="bi bi-disc text-info fs-1"></i>
                         </div>
+                        <h4 class="fw-bold">Nova Borracharia</h4>
+                        <p class="text-muted small px-5">Pneus, Alinhamento, Balanceamento e Vulcanização.</p>
+                        <a th:href="@{/so/register(type='TIRE_SHOP')}" class="btn btn-reicar-gold btn-main w-100 py-3 rounded-pill shadow">ABRIR OS BORRACHARIA</a>
                     </div>
                 </div>
             </div>
 
-            <div class="row mb-5 justify-content-center">
-                <div class="col-md-4">
-                    <div class="card card-selection shadow-sm p-4 text-center">
-                        <i class="bi bi-tools text-primary mb-3" style="font-size: 3rem;"></i>
-                        <h4>Mecânica Geral</h4>
-                        <p class="text-muted small">Suspensão, Motor, Travões e Revisão.</p>
-                        <a th:href="@{/so/register(type='MECHANIC')}" class="btn btn-reicar-gold w-100 py-2">NOVA OS MECÂNICA</a>
-                    </div>
+            <div class="table-container p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2"></i>Últimas Ordens de Serviço</h5>
+                    <span class="badge bg-light text-dark">Mostrando últimos 30 dias</span>
                 </div>
-                <div class="col-md-4">
-                    <div class="card card-selection shadow-sm p-4 text-center">
-                        <i class="bi bi-disc text-primary mb-3" style="font-size: 3rem;"></i>
-                        <h4>Borracharia</h4>
-                        <p class="text-muted small">Pneus, Alinhamento e Balanceamento.</p>
-                        <a th:href="@{/so/register(type='TIRE_SHOP')}" class="btn btn-reicar-gold w-100 py-2">NOVA OS BORRACHARIA</a>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle border-0">
+                        <thead>
+                        <tr>
+                            <th class="border-0">Nº OS</th>
+                            <th class="border-0">Cliente / Veículo</th>
+                            <th class="border-0">Data Entrada</th>
+                            <th class="border-0">Setor</th>
+                            <th class="border-0 text-center">Mão de Obra</th>
+                            <th class="border-0 text-center">Total OS</th>
+                            <th class="border-0">Status</th>
+                            <th class="border-0 text-center">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="order : ${orders}">
+                            <td class="fw-bold text-primary" th:text="${order.orderNumber}"></td>
+                            <td>
+                                <div class="fw-bold" th:text="${order.customer.name}"></div>
+                                <small class="text-muted" th:text="${order.customer.phone}"></small>
+                            </td>
+                            <td th:text="${#temporals.format(order.entryDate, 'dd/MM/yyyy')}"></td>
+                            <td>
+                                    <span th:classappend="${order instanceof T(com.reicar.entities.MechanicServiceOrder)} ? 'bg-primary' : 'bg-info'"
+                                          class="badge">
+                                          <span th:text="${order instanceof T(com.reicar.entities.MechanicServiceOrder) ? 'Mecânica' : 'Borracharia'}"></span>
+                                    </span>
+                            </td>
+                            <td class="text-center value-service" th:text="${#numbers.formatDecimal(order.serviceValue, 1, 'POINT', 2, 'COMMA')}"></td>
+                            <td class="text-center value-total fs-5" th:text="${#numbers.formatDecimal(order.totalValue, 1, 'POINT', 2, 'COMMA')}"></td>
+                            <td>
+                                <span class="status-badge bg-warning text-dark" th:text="${order.status}">ABERTA</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <button class="btn btn-white btn-sm" title="Ver Detalhes"><i class="bi bi-eye"></i></button>
+                                    <button class="btn btn-white btn-sm text-primary" title="Editar"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-white btn-sm text-success" title="Imprimir"><i class="bi bi-printer"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="8" class="text-center py-5 text-muted">Nenhuma atividade registrada no momento.</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-
-            <div class="table-container">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold"><i class="bi bi-list-ul me-2"></i>Atividades Recentes</h5>
-                </div>
-                <table class="table table-hover">
-                    <thead class="table-light">
-                    <tr>
-                        <th>OS nº</th>
-                        <th>Cliente</th>
-                        <th>Data</th>
-                        <th>Setor</th>
-                        <th>Total (R$)</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="order : ${orders}">
-                        <td th:text="${order.orderNumber}" class="fw-bold"></td>
-                        <td th:text="${order.customer.name}">Cliente</td>
-                        <td th:text="${#temporals.format(order.entryDate, 'dd/MM/yyyy')}">Data</td>
-                        <td>
-                                <span th:if="${order instanceof T(com.reicar.entities.MechanicServiceOrder)}"
-                                      class="badge bg-primary">Mecânica</span>
-                            <span th:if="${order instanceof T(com.reicar.entities.TireShopServiceOrder)}"
-                                  class="badge bg-info">Borracharia</span>
-                        </td>
-                        <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(order.totalValue, 1, 'POINT', 2, 'COMMA')}"></td>
-                        <td>
-                            <span class="status-badge bg-warning text-dark" th:text="${order.status}">ABERTA</span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-light"><i class="bi bi-eye"></i></button>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(orders)}">
-                        <td colspan="7" class="text-center text-muted py-4">Nenhuma ordem de serviço encontrada.</td>
-                    </tr>
-                    </tbody>
-                </table>
             </div>
         </main>
     </div>
