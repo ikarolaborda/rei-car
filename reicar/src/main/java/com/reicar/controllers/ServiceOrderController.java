@@ -2,6 +2,7 @@ package com.reicar.controllers;
 
 import com.reicar.dtos.ServiceOrderDTO;
 import com.reicar.entities.ServiceOrder;
+import com.reicar.services.PdfGeneratorService; // Importação necessária
 import com.reicar.services.ServiceOrderService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.io.IOException;
 public class ServiceOrderController {
 
     private final ServiceOrderService service;
+    private final PdfGeneratorService pdfGeneratorService; // Injeção adicionada
 
     @GetMapping("/register")
     public String showForm(@RequestParam(name = "type", defaultValue = "MECHANIC") String type, Model model) {
@@ -30,7 +32,6 @@ public class ServiceOrderController {
     public String saveOrder(@ModelAttribute("order") ServiceOrderDTO dto, RedirectAttributes redirectAttributes) {
         service.saveFromDto(dto);
         redirectAttributes.addFlashAttribute("message", "Ordem de Serviço salva com sucesso!");
-
         return "redirect:/dashboard";
     }
 
@@ -41,7 +42,7 @@ public class ServiceOrderController {
         String headerValue = "attachment; filename=OS_Reicar_" + id + ".pdf";
         response.setHeader(headerKey, headerValue);
 
-        ServiceOrder order = service.findById(id); // Busca a OS completa
+        ServiceOrder order = service.findById(id); // Recupera com JOIN FETCH via repositório
         pdfGeneratorService.export(response, order);
     }
 }
