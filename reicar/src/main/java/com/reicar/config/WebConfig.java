@@ -1,4 +1,4 @@
-package com.ideasystem.config;
+package com.reicar.config;
 
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
