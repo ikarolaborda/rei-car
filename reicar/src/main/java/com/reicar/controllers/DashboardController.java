@@ -12,6 +12,11 @@ public class DashboardController {
 
     private final ServiceOrderRepository repository;
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/dashboard";
+    }
+
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
         // Busca todas as OS

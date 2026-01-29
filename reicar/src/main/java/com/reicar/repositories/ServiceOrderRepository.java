@@ -1,5 +1,6 @@
 package com.reicar.repositories;
 
+import com.reicar.entities.Customer;
 import com.reicar.entities.ServiceOrder;
 import com.reicar.entities.enums.ServiceStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,4 +25,14 @@ public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long
 
     @Query("SELECT s FROM ServiceOrder s LEFT JOIN FETCH s.items LEFT JOIN FETCH s.customer WHERE s.id = :id")
     Optional<ServiceOrder> findByIdWithDetails(@Param("id") Long id);
+
+    @Query("SELECT so FROM ServiceOrder so LEFT JOIN FETCH so.items WHERE so.customer = :customer ORDER BY so.entryDate DESC")
+    List<ServiceOrder> findByCustomerOrderByEntryDateDesc(@Param("customer") Customer customer);
+
+    @Query("SELECT so FROM ServiceOrder so LEFT JOIN FETCH so.items WHERE so.customer = :customer AND so.entryDate >= :startDate AND so.entryDate <= :endDate ORDER BY so.entryDate DESC")
+    List<ServiceOrder> findByCustomerAndDateRange(
+        @Param("customer") Customer customer,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
 }

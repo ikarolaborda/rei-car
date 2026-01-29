@@ -45,6 +45,25 @@ public abstract class ServiceOrder {
     @Column(nullable = false)
     private BigDecimal totalValue = BigDecimal.ZERO;
 
+    @Column(name = "warranty_claimed")
+    private Boolean warrantyClaimed = false;
+
+    @Column(name = "warranty_claim_date")
+    private LocalDate warrantyClaimDate;
+
+    @Column(name = "warranty_claim_reason", length = 500)
+    private String warrantyClaimReason;
+
+    /**
+     * Checks if this service order is still under warranty based on the given warranty period.
+     * @param warrantyDays number of days the warranty is valid
+     * @return true if within warranty period
+     */
+    public boolean isUnderWarranty(int warrantyDays) {
+        if (entryDate == null) return false;
+        return LocalDate.now().isBefore(entryDate.plusDays(warrantyDays + 1));
+    }
+
     /**
      * Calcula o valor total da OS.
      * @param markup Fator de acréscimo sobre as peças (ex: 1.30 para 30%)

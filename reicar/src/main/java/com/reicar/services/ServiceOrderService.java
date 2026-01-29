@@ -5,6 +5,7 @@ import com.reicar.entities.*;
 import com.reicar.entities.enums.ServiceStatus;
 import com.reicar.repositories.CustomerRepository;
 import com.reicar.repositories.ServiceOrderRepository;
+import com.reicar.repositories.SystemConfigRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class ServiceOrderService {
 
     private final ServiceOrderRepository repository;
     private final CustomerRepository customerRepository;
+    private final SystemConfigRepository systemConfigRepository;
 
     public List<ServiceOrder> findAll() {
         return repository.findAllWithCustomer();
@@ -83,5 +86,53 @@ public class ServiceOrderService {
     private String generateNextOrderNumber() {
         long count = repository.count() + 1;
         return String.format("REICAR-%d-%04d", LocalDate.now().getYear(), count);
+    }
+
+    public List<ServiceOrder> findByCustomerWithFilters(Customer customer, LocalDate startDate, LocalDate endDate, String sortBy) {
+        List<ServiceOrder> orders;
+
+        if (startDate != null && endDate != null) {
+            orders = repository.findByCustomerAndDateRange(customer, startDate, endDate);
+        } else {
+            orders = repository.findByCustomerOrderByEntryDateDesc(customer);
+        }
+
+        if ("value".equalsIgnoreCase(sortBy)) {
+            orders = orders.stream()
+                .sorted(Comparator.comparing(ServiceOrder::getTotalValue).reversed())
+                .toList();
+        }
+
+        return orders;
+    }
+
+    public Optional<ServiceOrder> findByIdForCustomer(Long id, Customer customer) {
+        return repository.findByIdWithDetails(id)
+            .filter(order -> order.getCustomer().getId().equals(customer.getId()));
+    }
+
+    public int getWarrantyDays() {
+        return systemConfigRepository.getWarrantyDays();
+    }
+
+    @Transactional
+    public ServiceOrder claimWarranty(Long orderId, Customer customer, String reason) {
+        ServiceOrder order = findByIdForCustomer(orderId, customer)
+            .orElseThrow(() -> new EntityNotFoundException("Ordem de serviço não encontrada"));
+
+        int warrantyDays = getWarrantyDays();
+        if (!order.isUnderWarranty(warrantyDays)) {
+            throw new IllegalStateException("Serviço fora do período de garantia de " + warrantyDays + " dias");
+        }
+
+        if (Boolean.TRUE.equals(order.getWarrantyClaimed())) {
+            throw new IllegalStateException("Garantia já foi solicitada para esta ordem de serviço");
+        }
+
+        order.setWarrantyClaimed(true);
+        order.setWarrantyClaimDate(LocalDate.now());
+        order.setWarrantyClaimReason(reason);
+
+        return repository.save(order);
     }
 }
