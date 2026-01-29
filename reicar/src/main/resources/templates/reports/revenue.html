@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reicar - Relatório de Receitas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --reicar-blue: #0a1d37;
+            --reicar-gold: #fbc02d;
+        }
+        body { background-color: #f4f7f9; font-family: 'Inter', sans-serif; }
+        .sidebar { background-color: var(--reicar-blue); min-height: 100vh; color: white; }
+        .nav-link { border-radius: 8px; margin: 4px 0; color: rgba(255,255,255,0.8); transition: 0.2s; }
+        .nav-link:hover, .nav-link.active { background-color: var(--reicar-gold); color: var(--reicar-blue) !important; font-weight: 600; }
+        .report-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .table thead { background-color: var(--reicar-blue); color: white; }
+        .status-badge { font-weight: 700; text-transform: uppercase; padding: 6px 15px; border-radius: 8px; font-size: 0.7rem; }
+        .status-paid { background-color: #198754; color: white; }
+        .status-unpaid { background-color: #dc3545; color: white; }
+        .status-partial { background-color: #ffc107; color: #000; }
+        .status-cancelled { background-color: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar p-3 text-center position-fixed shadow">
+            <div class="mb-5 mt-3">
+                <img th:src="@{/images/logo_pequena.png}" alt="Reicar" class="img-fluid" style="max-height: 50px;">
+            </div>
+            <ul class="nav flex-column text-start">
+                <li class="nav-item"><a th:href="@{/dashboard}" class="nav-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/users}" class="nav-link"><i class="bi bi-people me-2"></i> Usuários</a></li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/invoices}" class="nav-link"><i class="bi bi-receipt me-2"></i> Faturas</a></li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/payments}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> Pagamentos</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/reports/dashboard}" class="nav-link active"><i class="bi bi-graph-up me-2"></i> Relatórios</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/settings}" class="nav-link"><i class="bi bi-gear me-2"></i> Configurações</a></li>
+            </ul>
+            <div class="mt-auto pt-4 border-top border-secondary">
+                <div class="text-white-50 small mb-2">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <span sec:authentication="name">Usuário</span>
+                </div>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-outline-light btn-sm w-100">
+                        <i class="bi bi-box-arrow-right me-2"></i>Sair
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4" style="margin-left: 16.6%;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a th:href="@{/reports/dashboard}">Relatórios</a></li>
+                            <li class="breadcrumb-item active">Receitas</li>
+                        </ol>
+                    </nav>
+                    <h2 class="fw-bold mb-0">Relatório de Receitas</h2>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/reports/revenue/pdf(startDate=${startDate}, endDate=${endDate})}" class="btn btn-danger">
+                        <i class="bi bi-file-earmark-pdf me-2"></i>Exportar PDF
+                    </a>
+                    <a th:href="@{/reports/revenue/csv(startDate=${startDate}, endDate=${endDate})}" class="btn btn-success">
+                        <i class="bi bi-file-earmark-spreadsheet me-2"></i>Exportar CSV
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <form th:action="@{/reports/revenue}" method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Data Início</label>
+                            <input type="date" name="startDate" class="form-control" th:value="${startDate}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Data Fim</label>
+                            <input type="date" name="endDate" class="form-control" th:value="${endDate}" required>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search me-2"></i>Gerar Relatório</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="report-card p-4">
+                        <h6 class="text-muted text-uppercase small">Total Faturado</h6>
+                        <div class="fs-3 fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(report.totalInvoiced, 1, 'POINT', 2, 'COMMA')}"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="report-card p-4">
+                        <h6 class="text-muted text-uppercase small">Total Recebido</h6>
+                        <div class="fs-3 fw-bold text-success" th:text="'R$ ' + ${#numbers.formatDecimal(report.totalReceived, 1, 'POINT', 2, 'COMMA')}"></div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="report-card p-4">
+                        <h6 class="text-muted text-uppercase small">Saldo Pendente</h6>
+                        <div class="fs-3 fw-bold text-danger" th:text="'R$ ' + ${#numbers.formatDecimal(report.outstandingBalance, 1, 'POINT', 2, 'COMMA')}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="report-card p-4">
+                        <h5 class="fw-bold mb-4">Resumo de Faturas</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Total de Faturas</span>
+                            <span class="fw-bold" th:text="${report.invoiceCount}"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-success">Faturas Pagas</span>
+                            <span class="fw-bold text-success" th:text="${report.paidInvoiceCount}"></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-danger">Faturas Pendentes</span>
+                            <span class="fw-bold text-danger" th:text="${report.unpaidInvoiceCount}"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-warning">Faturas Parciais</span>
+                            <span class="fw-bold text-warning" th:text="${report.partialInvoiceCount}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="report-card p-4">
+                        <h5 class="fw-bold mb-4">Receitas por Método de Pagamento</h5>
+                        <div th:each="entry : ${report.revenueByMethod}" class="d-flex justify-content-between mb-2">
+                            <span th:text="${entry.key.displayName}"></span>
+                            <span class="fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(entry.value, 1, 'POINT', 2, 'COMMA')}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="report-card p-4">
+                <h5 class="fw-bold mb-4">Faturas no Período</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Cliente</th>
+                                <th>Data Emissão</th>
+                                <th class="text-end">Valor Total</th>
+                                <th class="text-end">Valor Pago</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="invoice : ${report.invoices}">
+                                <td class="fw-bold text-primary" th:text="${invoice.invoiceNumber}"></td>
+                                <td th:text="${invoice.customerName}"></td>
+                                <td th:text="${#temporals.format(invoice.issueDate, 'dd/MM/yyyy')}"></td>
+                                <td class="text-end" th:text="'R$ ' + ${#numbers.formatDecimal(invoice.totalValue, 1, 'POINT', 2, 'COMMA')}"></td>
+                                <td class="text-end" th:text="'R$ ' + ${#numbers.formatDecimal(invoice.paidAmount, 1, 'POINT', 2, 'COMMA')}"></td>
+                                <td class="text-center">
+                                    <span class="status-badge"
+                                          th:classappend="${invoice.status.name() == 'PAID' ? 'status-paid' :
+                                                          (invoice.status.name() == 'UNPAID' ? 'status-unpaid' :
+                                                          (invoice.status.name() == 'PARTIAL' ? 'status-partial' : 'status-cancelled'))}"
+                                          th:text="${invoice.status}"></span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(report.invoices)}">
+                                <td colspan="6" class="text-center py-5 text-muted">Nenhuma fatura no período selecionado.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

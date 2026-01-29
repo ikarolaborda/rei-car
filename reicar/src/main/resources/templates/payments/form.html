@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reicar - Registrar Pagamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --reicar-blue: #0a1d37;
+            --reicar-gold: #fbc02d;
+        }
+        body { background-color: #f4f7f9; font-family: 'Inter', sans-serif; }
+        .sidebar { background-color: var(--reicar-blue); min-height: 100vh; color: white; }
+        .nav-link { border-radius: 8px; margin: 4px 0; color: rgba(255,255,255,0.8); transition: 0.2s; }
+        .nav-link:hover, .nav-link.active { background-color: var(--reicar-gold); color: var(--reicar-blue) !important; font-weight: 600; }
+        .form-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .info-card { background: linear-gradient(135deg, var(--reicar-blue), var(--reicar-blue-light, #162d4d)); color: white; border-radius: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar p-3 text-center position-fixed shadow">
+            <div class="mb-5 mt-3">
+                <img th:src="@{/images/logo_pequena.png}" alt="Reicar" class="img-fluid" style="max-height: 50px;">
+            </div>
+            <ul class="nav flex-column text-start">
+                <li class="nav-item"><a th:href="@{/dashboard}" class="nav-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/users}" class="nav-link"><i class="bi bi-people me-2"></i> Usuários</a></li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/invoices}" class="nav-link"><i class="bi bi-receipt me-2"></i> Faturas</a></li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/payments}" class="nav-link active"><i class="bi bi-cash-stack me-2"></i> Pagamentos</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/reports/dashboard}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Relatórios</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/settings}" class="nav-link"><i class="bi bi-gear me-2"></i> Configurações</a></li>
+            </ul>
+            <div class="mt-auto pt-4 border-top border-secondary">
+                <div class="text-white-50 small mb-2">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <span sec:authentication="name">Usuário</span>
+                </div>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-outline-light btn-sm w-100">
+                        <i class="bi bi-box-arrow-right me-2"></i>Sair
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4" style="margin-left: 16.6%;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a th:href="@{/invoices}">Faturas</a></li>
+                            <li class="breadcrumb-item"><a th:href="@{/invoices/{id}(id=${invoice.id})}" th:text="${invoice.invoiceNumber}"></a></li>
+                            <li class="breadcrumb-item active">Registrar Pagamento</li>
+                        </ol>
+                    </nav>
+                    <h2 class="fw-bold mb-0">Registrar Pagamento</h2>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="info-card p-4">
+                        <h5 class="mb-4"><i class="bi bi-info-circle me-2"></i>Informações da Fatura</h5>
+                        <div class="mb-3">
+                            <small class="text-white-50">Fatura</small>
+                            <div class="fw-bold" th:text="${invoice.invoiceNumber}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-white-50">Cliente</small>
+                            <div class="fw-bold" th:text="${invoice.customer.name}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-white-50">Valor Total</small>
+                            <div class="fw-bold fs-5" th:text="'R$ ' + ${#numbers.formatDecimal(invoice.totalValue, 1, 'POINT', 2, 'COMMA')}"></div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-white-50">Já Pago</small>
+                            <div class="fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(invoice.paidAmount, 1, 'POINT', 2, 'COMMA')}"></div>
+                        </div>
+                        <hr class="border-light">
+                        <div>
+                            <small class="text-white-50">Saldo Restante</small>
+                            <div class="fw-bold fs-4" style="color: var(--reicar-gold);" th:text="'R$ ' + ${#numbers.formatDecimal(remainingBalance, 1, 'POINT', 2, 'COMMA')}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="form-card p-4">
+                        <h5 class="fw-bold mb-4">Dados do Pagamento</h5>
+                        <form th:action="@{/payments}" method="post">
+                            <input type="hidden" name="invoiceId" th:value="${invoice.id}">
+
+                            <div class="mb-4">
+                                <label class="form-label">Valor do Pagamento <span class="text-danger">*</span></label>
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text">R$</span>
+                                    <input type="number" name="amount" class="form-control" step="0.01" min="0.01"
+                                           th:max="${remainingBalance}" th:value="${remainingBalance}" required>
+                                </div>
+                                <div class="form-text">Valor máximo: R$ <span th:text="${#numbers.formatDecimal(remainingBalance, 1, 'POINT', 2, 'COMMA')}"></span></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Método de Pagamento <span class="text-danger">*</span></label>
+                                <div class="row g-3">
+                                    <div class="col-md-4" th:each="method : ${paymentMethods}">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input visually-hidden" type="radio" name="paymentMethod"
+                                                   th:id="${method.name()}" th:value="${method}" required>
+                                            <label class="form-check-label d-block p-3 border rounded text-center cursor-pointer"
+                                                   th:for="${method.name()}" style="cursor: pointer;">
+                                                <i class="bi fs-3 d-block mb-2"
+                                                   th:classappend="${method.name() == 'CASH'} ? 'bi-cash' :
+                                                                   (${method.name() == 'PIX'} ? 'bi-qr-code' :
+                                                                   (${method.name() == 'CREDIT_CARD'} ? 'bi-credit-card' :
+                                                                   (${method.name() == 'DEBIT_CARD'} ? 'bi-credit-card-2-front' : 'bi-bank')))"></i>
+                                                <span th:text="${method.displayName}"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a th:href="@{/invoices/{id}(id=${invoice.id})}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success btn-lg flex-grow-1">
+                                    <i class="bi bi-check-circle me-2"></i>Confirmar Pagamento
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelectorAll('.form-check-card input').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.form-check-card label').forEach(label => {
+                label.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10');
+            });
+            if (this.checked) {
+                this.nextElementSibling.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+            }
+        });
+    });
+</script>
+</body>
+</html>
