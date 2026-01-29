@@ -1,0 +1,74 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: reicar-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-reicar_root_2024}
+      MYSQL_DATABASE: reicar
+      MYSQL_USER: ${MYSQL_USER:-reicar_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-reicar_pass_2024}
+    ports:
+      - "33306:3306"
+    volumes:
+      - reicar-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-reicar_root_2024}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - reicar-network
+
+  app:
+    build:
+      context: ./reicar
+      target: final
+    container_name: reicar-app
+    restart: unless-stopped
+    environment:
+      MYSQLHOST: db
+      MYSQLPORT: 3306
+      MYSQLUSER: ${MYSQL_USER:-reicar_user}
+      MYSQLPASSWORD: ${MYSQL_PASSWORD:-reicar_pass_2024}
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "38080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - reicar-network
+
+  app-dev:
+    build:
+      context: ./reicar
+      target: development
+    container_name: reicar-app-dev
+    profiles:
+      - dev
+    restart: unless-stopped
+    environment:
+      MYSQLHOST: db
+      MYSQLPORT: 3306
+      MYSQLUSER: ${MYSQL_USER:-reicar_user}
+      MYSQLPASSWORD: ${MYSQL_PASSWORD:-reicar_pass_2024}
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "38080:8080"
+      - "38000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - reicar-network
+
+volumes:
+  reicar-mysql-data:
+    name: reicar-mysql-data
+
+networks:
+  reicar-network:
+    name: reicar-network
+    driver: bridge

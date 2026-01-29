@@ -1,0 +1,50 @@
+# =============================================================================
+# .dockerignore - Exclude files from Docker build context
+# Reduces image size and build time
+# =============================================================================
+
+# Maven build output
+**/target/
+
+# IDE and editor files
+**/.idea/
+**/.vscode/
+**/.settings/
+**/.project
+**/.classpath
+**/*.iml
+**/*.swp
+**/.DS_Store
+
+# Git
+**/.git/
+**/.gitignore
+**/.gitattributes
+
+# Environment and secrets
+**/.env
+**/.env.*
+**/secrets/
+
+# Docker files (avoid recursive copying)
+**/Dockerfile*
+**/.dockerignore
+**/docker-compose*
+**/compose*.yml
+
+# Documentation
+**/README.md
+**/LICENSE
+**/docs/
+
+# Test files (if not needed in image)
+**/src/test/
+
+# Logs
+**/*.log
+**/logs/
+
+# Temporary files
+**/*.tmp
+**/*.bak
+**/*.old
