@@ -23,3 +23,7 @@ spring:
         format_sql: true # Melhora a leitura do SQL no console
         dialect: org.hibernate.dialect.MySQL8Dialect
     open-in-view: false # Evita o anti-padrão Open Session in View (OSIV)
+
+reicar:
+  error:
+    show-details: true # Mostra detalhes de erro (stack trace). Em produção, defina como false.

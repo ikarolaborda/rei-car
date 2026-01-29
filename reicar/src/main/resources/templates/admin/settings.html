@@ -4,23 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reicar - Configurações do Sistema</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/bootstrap-icons.min.css}" rel="stylesheet">
+    <link th:href="@{/css/reicar.css}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --reicar-blue: #0a1d37;
-            --reicar-gold: #fbc02d;
-        }
-
-        body { background-color: #f4f7f9; font-family: 'Inter', sans-serif; }
-        .sidebar { background-color: var(--reicar-blue); min-height: 100vh; color: white; }
-        .nav-link { border-radius: 8px; margin: 4px 0; color: rgba(255,255,255,0.8); transition: 0.2s; }
-        .nav-link:hover, .nav-link.active { background-color: var(--reicar-gold); color: var(--reicar-blue) !important; font-weight: 600; }
-        .settings-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .btn-reicar { background: var(--reicar-gold); color: var(--reicar-blue); font-weight: 600; }
-        .btn-reicar:hover { background: #ffca28; color: var(--reicar-blue); }
-    </style>
 </head>
 <body>
 
@@ -36,6 +25,7 @@
                 <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/invoices}" class="nav-link"><i class="bi bi-receipt me-2"></i> Faturas</a></li>
                 <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/payments}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> Pagamentos</a></li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/reports/dashboard}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Relatórios</a></li>
+                <li class="nav-item" sec:authorize="hasRole('CUSTOMER')"><a th:href="@{/my-services}" class="nav-link"><i class="bi bi-file-earmark-text me-2"></i> Meus Serviços</a></li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/settings}" class="nav-link active"><i class="bi bi-gear me-2"></i> Configurações</a></li>
             </ul>
             <div class="mt-auto pt-4 border-top border-secondary">
@@ -84,7 +74,7 @@
                                 <small class="text-muted">Valor entre 0 e 365 dias. Use 0 para desabilitar garantias.</small>
                             </div>
 
-                            <button type="submit" class="btn btn-reicar">
+                            <button type="submit" class="btn btn-reicar-gold">
                                 <i class="bi bi-check-circle me-2"></i>Salvar Alterações
                             </button>
                         </form>
@@ -117,6 +107,6 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

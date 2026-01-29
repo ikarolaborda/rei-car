@@ -1,0 +1,20 @@
+{
+  "name": "reicar-frontend",
+  "version": "0.1.0",
+  "description": "Frontend dependencies for Reicar application",
+  "private": true,
+  "scripts": {
+    "copy:bootstrap-css": "cp node_modules/bootstrap/dist/css/bootstrap.min.css src/main/resources/static/css/",
+    "copy:bootstrap-js": "cp node_modules/bootstrap/dist/js/bootstrap.bundle.min.js src/main/resources/static/js/",
+    "copy:bootstrap-icons-css": "cp node_modules/bootstrap-icons/font/bootstrap-icons.min.css src/main/resources/static/css/",
+    "copy:bootstrap-icons-fonts": "mkdir -p src/main/resources/static/css/fonts && cp node_modules/bootstrap-icons/font/fonts/* src/main/resources/static/css/fonts/",
+    "copy:chartjs": "cp node_modules/chart.js/dist/chart.umd.js src/main/resources/static/js/chart.min.js",
+    "copy:deps": "npm run copy:bootstrap-css && npm run copy:bootstrap-js && npm run copy:bootstrap-icons-css && npm run copy:bootstrap-icons-fonts && npm run copy:chartjs",
+    "postinstall": "npm run copy:deps"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.0",
+    "bootstrap-icons": "^1.11.1",
+    "chart.js": "^4.4.1"
+  }
+}

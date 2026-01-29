@@ -1,0 +1,505 @@
+/**
+ * Reicar - Custom Styles
+ * Centralized stylesheet for the Reicar application
+ */
+
+/* ==========================================================================
+   CSS Variables (Design Tokens)
+   ========================================================================== */
+
+:root {
+    --reicar-blue: #0a1d37;
+    --reicar-blue-light: #162d4d;
+    --reicar-gold: #fbc02d;
+    --reicar-gold-hover: #ffca28;
+    --status-open: #fbc02d;
+    --status-done: #198754;
+    --bg-light: #f4f7f9;
+}
+
+/* ==========================================================================
+   Base Styles
+   ========================================================================== */
+
+body {
+    background-color: var(--bg-light);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ==========================================================================
+   Sidebar Navigation
+   ========================================================================== */
+
+.sidebar {
+    background-color: var(--reicar-blue);
+    min-height: 100vh;
+    color: white;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+.sidebar .nav-link {
+    border-radius: 8px;
+    margin: 4px 0;
+    color: rgba(255, 255, 255, 0.8);
+    transition: 0.2s;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: var(--reicar-gold);
+    color: var(--reicar-blue) !important;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   KPI Cards
+   ========================================================================== */
+
+.kpi-card {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.kpi-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   Cards and Containers
+   ========================================================================== */
+
+.card-selection {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.3s;
+    border-radius: 15px;
+}
+
+.card-selection:hover {
+    border-color: var(--reicar-gold);
+    background-color: #fff;
+    transform: scale(1.03);
+}
+
+.table-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.detail-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.form-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.form-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.settings-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.report-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.filter-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.chart-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.info-card {
+    background: linear-gradient(135deg, var(--reicar-blue), var(--reicar-blue-light));
+    color: white;
+    border-radius: 15px;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.table thead {
+    background-color: var(--reicar-blue);
+    color: white;
+}
+
+.table tfoot input {
+    background-color: #fff !important;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn-main {
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.btn-reicar {
+    background: var(--reicar-gold);
+    color: var(--reicar-blue);
+    font-weight: 600;
+}
+
+.btn-reicar:hover {
+    background: var(--reicar-gold-hover);
+    color: var(--reicar-blue);
+}
+
+.btn-reicar-gold {
+    background: var(--reicar-gold);
+    color: var(--reicar-blue);
+    font-weight: 600;
+}
+
+.btn-reicar-gold:hover {
+    background: var(--reicar-gold-hover);
+    color: var(--reicar-blue);
+}
+
+/* ==========================================================================
+   Status Badges
+   ========================================================================== */
+
+.status-badge {
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 6px 15px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+}
+
+.status-paid {
+    background-color: #198754;
+    color: white;
+}
+
+.status-unpaid {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-partial {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.status-cancelled {
+    background-color: #6c757d;
+    color: white;
+}
+
+.role-badge {
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 6px 15px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+}
+
+.method-badge {
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   Warranty Badges and Cards
+   ========================================================================== */
+
+.warranty-badge {
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: white;
+}
+
+.warranty-expired {
+    background: #6c757d;
+    color: white;
+}
+
+.warranty-card {
+    background: linear-gradient(135deg, #198754, #20c997);
+    color: white;
+    border-radius: 15px;
+}
+
+.warranty-expired-card {
+    background: #6c757d;
+    color: white;
+    border-radius: 15px;
+}
+
+.warranty-claimed-card {
+    background: #0dcaf0;
+    color: white;
+    border-radius: 15px;
+}
+
+/* ==========================================================================
+   Customer Header
+   ========================================================================== */
+
+.customer-header {
+    background: linear-gradient(135deg, var(--reicar-blue), var(--reicar-blue-light));
+    color: white;
+    border-radius: 15px;
+}
+
+/* ==========================================================================
+   Form Elements
+   ========================================================================== */
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--reicar-gold);
+    box-shadow: 0 0 0 0.2rem rgba(251, 192, 45, 0.25);
+}
+
+/* ==========================================================================
+   Value Display
+   ========================================================================== */
+
+.value-service {
+    color: #198754;
+    font-weight: 700;
+}
+
+.value-total {
+    color: var(--reicar-blue);
+    font-weight: 800;
+}
+
+/* ==========================================================================
+   Info Labels
+   ========================================================================== */
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6c757d;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Card Headers
+   ========================================================================== */
+
+.card-header-reicar {
+    background-color: var(--reicar-blue);
+    color: white;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   Section Titles
+   ========================================================================== */
+
+.section-title {
+    border-left: 4px solid var(--reicar-gold);
+    padding-left: 10px;
+    margin-bottom: 20px;
+    color: var(--reicar-blue);
+}
+
+/* ==========================================================================
+   Service Order Form
+   ========================================================================== */
+
+.input-total-final {
+    font-size: 1.1rem;
+    color: var(--reicar-blue);
+}
+
+/* ==========================================================================
+   Login Page
+   ========================================================================== */
+
+.login-page {
+    background: linear-gradient(135deg, var(--reicar-blue) 0%, var(--reicar-blue-light) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--reicar-blue) 0%, var(--reicar-blue-light) 100%);
+}
+
+.login-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    max-width: 420px;
+    width: 100%;
+}
+
+.login-header {
+    background: var(--reicar-blue);
+    padding: 2rem;
+    border-radius: 20px 20px 0 0;
+    text-align: center;
+}
+
+.login-body {
+    padding: 2rem;
+}
+
+.login-body .form-control {
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
+}
+
+.login-body .form-control:focus {
+    border-color: var(--reicar-gold);
+    box-shadow: 0 0 0 0.2rem rgba(251, 192, 45, 0.25);
+}
+
+.btn-login {
+    background: var(--reicar-gold);
+    color: var(--reicar-blue);
+    border: none;
+    border-radius: 10px;
+    padding: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.btn-login:hover {
+    background: var(--reicar-gold-hover);
+    color: var(--reicar-blue);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(251, 192, 45, 0.4);
+}
+
+.login-brand {
+    background: linear-gradient(135deg, var(--reicar-blue-light) 0%, var(--reicar-blue) 100%);
+    color: white;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--reicar-gold);
+}
+
+.form-check-input:checked {
+    background-color: var(--reicar-gold);
+    border-color: var(--reicar-gold);
+}
+
+/* ==========================================================================
+   Access Denied Page
+   ========================================================================== */
+
+.access-denied-page {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.access-denied-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.access-denied-card,
+.access-denied-page .error-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    padding: 3rem;
+    text-align: center;
+    max-width: 450px;
+}
+
+.access-denied-page .error-icon {
+    font-size: 4rem;
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.access-denied-page .btn-back {
+    background: var(--reicar-blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.access-denied-page .btn-back:hover {
+    background: var(--reicar-blue-light);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+.bg-reicar-blue {
+    background-color: var(--reicar-blue) !important;
+}
+
+.text-reicar-gold {
+    color: var(--reicar-gold) !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

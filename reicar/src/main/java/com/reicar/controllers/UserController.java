@@ -39,6 +39,7 @@ public class UserController {
         model.addAttribute("user", new UserCreateDTO());
         model.addAttribute("roles", Role.values());
         model.addAttribute("customers", customerRepository.findAll());
+        model.addAttribute("editing", false);
         return "users/form";
     }
 

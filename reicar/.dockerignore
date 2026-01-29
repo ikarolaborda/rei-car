@@ -6,6 +6,10 @@
 # Maven build output
 **/target/
 
+# Node modules (npm dependencies are handled in Docker build)
+**/node_modules/
+**/package-lock.json
+
 # IDE and editor files
 **/.idea/
 **/.vscode/

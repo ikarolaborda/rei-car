@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reicar - Erro</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/bootstrap-icons.min.css}" rel="stylesheet">
+    <link th:href="@{/css/reicar.css}" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .error-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        .error-header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px 16px 0 0;
+        }
+        .error-status {
+            font-size: 4rem;
+            font-weight: 700;
+            opacity: 0.9;
+        }
+        .error-body {
+            padding: 2rem;
+        }
+        .stack-trace {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .dev-badge {
+            background: #ffc107;
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .detail-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        .detail-value {
+            color: #212529;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-header">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="error-status" th:text="${status} ?: '500'">500</div>
+                    <h2 class="mb-0" th:text="${error} ?: 'Erro Interno'">Erro Interno</h2>
+                </div>
+                <span th:if="${devMode}" class="dev-badge">
+                    <i class="bi bi-code-slash me-1"></i>DEV MODE
+                </span>
+            </div>
+        </div>
+
+        <div class="error-body">
+            <div class="alert alert-danger d-flex align-items-center mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                <div>
+                    <strong>Ocorreu um erro inesperado.</strong>
+                    <span th:if="${!devMode}"> Por favor, tente novamente mais tarde ou entre em contato com o suporte.</span>
+                </div>
+            </div>
+
+            <div th:if="${devMode}" class="mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Detalhes do Erro</h5>
+
+                <div class="detail-item">
+                    <div class="detail-label">Timestamp</div>
+                    <div class="detail-value" th:text="${#temporals.format(timestamp, 'dd/MM/yyyy HH:mm:ss')}" th:if="${timestamp}">-</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Path</div>
+                    <div class="detail-value" th:text="${path}">-</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Tipo da Exceção</div>
+                    <div class="detail-value text-danger" th:text="${exceptionType}">-</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">Mensagem</div>
+                    <div class="detail-value" th:text="${message} ?: 'Sem mensagem disponível'">-</div>
+                </div>
+            </div>
+
+            <div th:if="${devMode and stackTrace}" class="mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-terminal me-2"></i>Stack Trace</h5>
+                <div class="stack-trace" th:text="${stackTrace}"></div>
+            </div>
+
+            <div class="d-flex gap-2 justify-content-center pt-3">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Voltar
+                </a>
+                <a th:href="@{/dashboard}" class="btn btn-primary">
+                    <i class="bi bi-house me-2"></i>Ir para Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
