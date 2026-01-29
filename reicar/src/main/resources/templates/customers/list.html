@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reicar - Gerenciar Usuários</title>
+    <title>Reicar - Gerenciar Clientes</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <link th:href="@{/css/bootstrap-icons.min.css}" rel="stylesheet">
     <link th:href="@{/css/reicar.css}" rel="stylesheet">
@@ -21,8 +21,8 @@
             </div>
             <ul class="nav flex-column text-start">
                 <li class="nav-item"><a th:href="@{/dashboard}" class="nav-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/customers}" class="nav-link"><i class="bi bi-person-vcard me-2"></i> Clientes</a></li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/users}" class="nav-link active"><i class="bi bi-people me-2"></i> Usuários</a></li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/customers}" class="nav-link active"><i class="bi bi-person-vcard me-2"></i> Clientes</a></li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/users}" class="nav-link"><i class="bi bi-people me-2"></i> Usuários</a></li>
                 <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/invoices}" class="nav-link"><i class="bi bi-receipt me-2"></i> Faturas</a></li>
                 <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MECHANIC')"><a th:href="@{/payments}" class="nav-link"><i class="bi bi-cash-stack me-2"></i> Pagamentos</a></li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a th:href="@{/reports/dashboard}" class="nav-link"><i class="bi bi-graph-up me-2"></i> Relatórios</a></li>
@@ -45,11 +45,11 @@
         <main class="col-md-10 ms-sm-auto px-md-4 py-4" style="margin-left: 16.6%;">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 class="fw-bold mb-0">Gerenciar Usuários</h2>
-                    <p class="text-muted">Controle de acesso ao sistema</p>
+                    <h2 class="fw-bold mb-0">Gerenciar Clientes</h2>
+                    <p class="text-muted">Cadastro e manutenção de clientes</p>
                 </div>
-                <a th:href="@{/users/new}" class="btn btn-reicar-gold shadow">
-                    <i class="bi bi-plus-circle me-2"></i>Novo Usuário
+                <a th:href="@{/customers/new}" class="btn btn-reicar-gold shadow">
+                    <i class="bi bi-plus-circle me-2"></i>Novo Cliente
                 </a>
             </div>
 
@@ -63,48 +63,55 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <form th:action="@{/customers}" method="get" class="row g-3">
+                        <div class="col-md-10">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" name="search" class="form-control" placeholder="Pesquisar por nome..."
+                                       th:value="${search}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Pesquisar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="table-container p-4">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle border-0">
                         <thead>
                             <tr>
                                 <th class="border-0">ID</th>
-                                <th class="border-0">Usuário</th>
-                                <th class="border-0">Perfil</th>
-                                <th class="border-0">Cliente Vinculado</th>
-                                <th class="border-0 text-center">Status</th>
+                                <th class="border-0">Nome</th>
+                                <th class="border-0">Telefone</th>
+                                <th class="border-0">Cidade</th>
+                                <th class="border-0">UF</th>
                                 <th class="border-0 text-center">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="user : ${users}">
-                                <td class="fw-bold text-muted" th:text="${user.id()}"></td>
-                                <td class="fw-bold" th:text="${user.username()}"></td>
+                            <tr th:each="customer : ${customers}">
+                                <td class="fw-bold text-muted" th:text="${customer.id}"></td>
+                                <td class="fw-bold" th:text="${customer.name}"></td>
                                 <td>
-                                    <span th:class="${'role-badge ' + (user.role().name() == 'ADMIN' ? 'bg-danger' : (user.role().name() == 'MECHANIC' ? 'bg-primary' : 'bg-info'))}"
-                                          th:text="${user.role().name() == 'ADMIN' ? 'Administrador' : (user.role().name() == 'MECHANIC' ? 'Mecânico' : 'Cliente')}"></span>
+                                    <a th:href="@{'tel:' + ${customer.phone}}" class="text-decoration-none" th:if="${customer.phone}">
+                                        <i class="bi bi-telephone me-1"></i><span th:text="${customer.phone}"></span>
+                                    </a>
+                                    <span th:unless="${customer.phone}" class="text-muted">-</span>
                                 </td>
-                                <td>
-                                    <span th:if="${user.customerName()}" th:text="${user.customerName()}"></span>
-                                    <span th:unless="${user.customerName()}" class="text-muted">-</span>
-                                </td>
-                                <td class="text-center">
-                                    <span th:class="${user.enabled() ? 'badge bg-success' : 'badge bg-secondary'}"
-                                          th:text="${user.enabled() ? 'Ativo' : 'Inativo'}"></span>
-                                </td>
+                                <td th:text="${customer.city} ?: '-'"></td>
+                                <td th:text="${customer.state} ?: '-'"></td>
                                 <td class="text-center">
                                     <div class="btn-group shadow-sm">
-                                        <a th:href="@{/users/{id}/edit(id=${user.id()})}" class="btn btn-white btn-sm text-primary" title="Editar">
+                                        <a th:href="@{/customers/{id}/edit(id=${customer.id})}" class="btn btn-white btn-sm text-primary" title="Editar">
                                             <i class="bi bi-pencil"></i>
                                         </a>
-                                        <form th:action="@{/users/{id}/toggle(id=${user.id()})}" method="post" class="d-inline">
-                                            <button type="submit" class="btn btn-white btn-sm" th:classappend="${user.enabled() ? 'text-warning' : 'text-success'}"
-                                                    th:title="${user.enabled() ? 'Desativar' : 'Ativar'}">
-                                                <i th:class="${user.enabled() ? 'bi bi-toggle-on' : 'bi bi-toggle-off'}"></i>
-                                            </button>
-                                        </form>
-                                        <form th:action="@{/users/{id}/delete(id=${user.id()})}" method="post" class="d-inline"
-                                              onsubmit="return confirm('Tem certeza que deseja excluir este usuário?');">
+                                        <form th:action="@{/customers/{id}/delete(id=${customer.id})}" method="post" class="d-inline"
+                                              onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
                                             <button type="submit" class="btn btn-white btn-sm text-danger" title="Excluir">
                                                 <i class="bi bi-trash"></i>
                                             </button>
@@ -112,8 +119,11 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr th:if="${#lists.isEmpty(users)}">
-                                <td colspan="6" class="text-center py-5 text-muted">Nenhum usuário cadastrado.</td>
+                            <tr th:if="${#lists.isEmpty(customers)}">
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-person-x fs-1 d-block mb-2"></i>
+                                    Nenhum cliente encontrado.
+                                </td>
                             </tr>
                         </tbody>
                     </table>
