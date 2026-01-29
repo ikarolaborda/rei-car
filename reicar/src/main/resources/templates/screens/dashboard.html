@@ -58,7 +58,7 @@
                 </div>
             </div>
 
-            <div class="row g-3 mb-4" th:with="totalSum=${#aggregates.sum(orders.![totalValue]) ?: 0.0}, serviceSum=${#aggregates.sum(orders.![serviceValue]) ?: 0.0}">
+            <div class="row g-3 mb-4" th:with="totalSum=${orders.isEmpty() ? 0.0 : #aggregates.sum(orders.?[totalValue != null].![totalValue]) ?: 0.0}, serviceSum=${orders.isEmpty() ? 0.0 : #aggregates.sum(orders.?[serviceValue != null].![serviceValue]) ?: 0.0}">
                 <div class="col-md-3">
                     <div class="card kpi-card shadow-sm p-3 border-start border-primary border-5">
                         <span class="kpi-label text-muted">Volume de OS</span>

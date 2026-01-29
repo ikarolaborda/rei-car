@@ -87,7 +87,7 @@
                     <div class="error-status" th:text="${status} ?: '500'">500</div>
                     <h2 class="mb-0" th:text="${error} ?: 'Erro Interno'">Erro Interno</h2>
                 </div>
-                <span th:if="${devMode}" class="dev-badge">
+                <span th:if="${devMode == true}" class="dev-badge">
                     <i class="bi bi-code-slash me-1"></i>DEV MODE
                 </span>
             </div>
@@ -98,11 +98,11 @@
                 <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
                 <div>
                     <strong>Ocorreu um erro inesperado.</strong>
-                    <span th:if="${!devMode}"> Por favor, tente novamente mais tarde ou entre em contato com o suporte.</span>
+                    <span th:unless="${devMode == true}"> Por favor, tente novamente mais tarde ou entre em contato com o suporte.</span>
                 </div>
             </div>
 
-            <div th:if="${devMode}" class="mb-4">
+            <div th:if="${devMode == true}" class="mb-4">
                 <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Detalhes do Erro</h5>
 
                 <div class="detail-item">
@@ -126,7 +126,7 @@
                 </div>
             </div>
 
-            <div th:if="${devMode and stackTrace}" class="mb-4">
+            <div th:if="${devMode == true and stackTrace != null}" class="mb-4">
                 <h5 class="fw-bold mb-3"><i class="bi bi-terminal me-2"></i>Stack Trace</h5>
                 <div class="stack-trace" th:text="${stackTrace}"></div>
             </div>
