@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reicar - Detalhes do Serviço</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --reicar-blue: #0a1d37;
+            --reicar-gold: #fbc02d;
+        }
+
+        body { background-color: #f4f7f9; font-family: 'Inter', sans-serif; }
+        .sidebar { background-color: var(--reicar-blue); min-height: 100vh; color: white; }
+        .nav-link { border-radius: 8px; margin: 4px 0; color: rgba(255,255,255,0.8); transition: 0.2s; }
+        .nav-link:hover, .nav-link.active { background-color: var(--reicar-gold); color: var(--reicar-blue) !important; font-weight: 600; }
+        .detail-card { background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .info-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6c757d; }
+        .warranty-card { background: linear-gradient(135deg, #198754, #20c997); color: white; border-radius: 15px; }
+        .warranty-expired-card { background: #6c757d; color: white; border-radius: 15px; }
+        .warranty-claimed-card { background: #0dcaf0; color: white; border-radius: 15px; }
+        .table thead { background-color: var(--reicar-blue); color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar p-3 text-center position-fixed shadow">
+            <div class="mb-5 mt-3">
+                <img th:src="@{/images/logo_pequena.png}" alt="Reicar" class="img-fluid" style="max-height: 50px;">
+            </div>
+            <ul class="nav flex-column text-start">
+                <li class="nav-item"><a th:href="@{/dashboard}" class="nav-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                <li class="nav-item"><a th:href="@{/my-services}" class="nav-link active"><i class="bi bi-file-earmark-text me-2"></i> Meus Serviços</a></li>
+            </ul>
+            <div class="mt-auto pt-4 border-top border-secondary">
+                <div class="text-white-50 small mb-2">
+                    <i class="bi bi-person-circle me-1"></i>
+                    <span sec:authentication="name">Usuário</span>
+                </div>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-outline-light btn-sm w-100">
+                        <i class="bi bi-box-arrow-right me-2"></i>Sair
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <main class="col-md-10 ms-sm-auto px-md-4 py-4" style="margin-left: 16.6%;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-0">Detalhes do Serviço</h2>
+                    <p class="text-muted">Ordem de Serviço <span th:text="${order.orderNumber}" class="fw-bold text-primary"></span></p>
+                </div>
+                <a th:href="@{/my-services}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Voltar
+                </a>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle me-2"></i><span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="detail-card p-4 mb-4">
+                        <h5 class="fw-bold mb-4"><i class="bi bi-info-circle me-2"></i>Informações do Serviço</h5>
+                        <div class="row g-4">
+                            <div class="col-md-4">
+                                <span class="info-label">Data de Entrada</span>
+                                <p class="fw-bold mb-0" th:text="${#temporals.format(order.entryDate, 'dd/MM/yyyy')}"></p>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="info-label">Tipo de Serviço</span>
+                                <p class="fw-bold mb-0">
+                                    <span th:text="${order instanceof T(com.reicar.entities.MechanicServiceOrder) ? 'Mecânica Geral' : 'Borracharia'}"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="info-label">Status</span>
+                                <p class="mb-0"><span class="badge bg-warning text-dark" th:text="${order.status}"></span></p>
+                            </div>
+                            <div th:if="${order instanceof T(com.reicar.entities.MechanicServiceOrder)}" class="col-12">
+                                <span class="info-label">Diagnóstico Técnico</span>
+                                <p class="mb-0" th:text="${order.technicalDiagnosis} ?: 'Não informado'"></p>
+                            </div>
+                            <div th:if="${order instanceof T(com.reicar.entities.MechanicServiceOrder)}" class="col-md-4">
+                                <span class="info-label">Quilometragem</span>
+                                <p class="fw-bold mb-0" th:text="${order.vehicleKm} ? ${#numbers.formatInteger(order.vehicleKm, 3, 'POINT')} + ' km' : 'Não informado'"></p>
+                            </div>
+                            <div th:if="${order instanceof T(com.reicar.entities.TireShopServiceOrder)}" class="col-md-4">
+                                <span class="info-label">Posição dos Pneus</span>
+                                <p class="fw-bold mb-0" th:text="${order.tirePosition} ?: 'Não informado'"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-card p-4">
+                        <h5 class="fw-bold mb-4"><i class="bi bi-list-check me-2"></i>Itens do Serviço</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle border-0">
+                                <thead>
+                                    <tr>
+                                        <th class="border-0">Descrição</th>
+                                        <th class="border-0 text-center">Qtd</th>
+                                        <th class="border-0 text-end">Valor Unit.</th>
+                                        <th class="border-0 text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="item : ${order.items}">
+                                        <td th:text="${item.description}"></td>
+                                        <td class="text-center" th:text="${item.quantity}"></td>
+                                        <td class="text-end" th:text="'R$ ' + ${#numbers.formatDecimal(item.unitPrice, 1, 'POINT', 2, 'COMMA')}"></td>
+                                        <td class="text-end fw-bold" th:text="'R$ ' + ${#numbers.formatDecimal(item.unitPrice * item.quantity, 1, 'POINT', 2, 'COMMA')}"></td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(order.items)}">
+                                        <td colspan="4" class="text-center text-muted py-3">Nenhum item de peças registrado</td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="border-top">
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-semibold">Mão de Obra:</td>
+                                        <td class="text-end fw-bold text-success" th:text="'R$ ' + ${#numbers.formatDecimal(order.serviceValue, 1, 'POINT', 2, 'COMMA')}"></td>
+                                    </tr>
+                                    <tr class="table-light">
+                                        <td colspan="3" class="text-end fw-bold fs-5">TOTAL:</td>
+                                        <td class="text-end fw-bold fs-5 text-primary" th:text="'R$ ' + ${#numbers.formatDecimal(order.totalValue, 1, 'POINT', 2, 'COMMA')}"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <!-- Warranty Card -->
+                    <div th:if="${order.warrantyClaimed}" class="warranty-claimed-card p-4 mb-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-exclamation-circle me-2"></i>Garantia Solicitada</h5>
+                        <p class="mb-2"><strong>Data da solicitação:</strong> <span th:text="${#temporals.format(order.warrantyClaimDate, 'dd/MM/yyyy')}"></span></p>
+                        <p class="mb-0"><strong>Motivo:</strong> <span th:text="${order.warrantyClaimReason}"></span></p>
+                    </div>
+
+                    <div th:unless="${order.warrantyClaimed}">
+                        <div th:if="${isUnderWarranty}" class="warranty-card p-4 mb-4">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-shield-check me-2"></i>Garantia Válida</h5>
+                            <p class="mb-3">Este serviço está coberto pela garantia de <span th:text="${warrantyDays}">90</span> dias.</p>
+                            <button type="button" class="btn btn-light w-100" data-bs-toggle="modal" data-bs-target="#warrantyModal">
+                                <i class="bi bi-megaphone me-2"></i>Solicitar Garantia
+                            </button>
+                        </div>
+
+                        <div th:unless="${isUnderWarranty}" class="warranty-expired-card p-4 mb-4">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-shield-x me-2"></i>Garantia Expirada</h5>
+                            <p class="mb-0">O período de garantia de <span th:text="${warrantyDays}">90</span> dias para este serviço já expirou.</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-card p-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-person me-2"></i>Cliente</h5>
+                        <p class="mb-2"><strong>Nome:</strong> <span th:text="${order.customer.name}"></span></p>
+                        <p class="mb-2"><strong>Telefone:</strong> <span th:text="${order.customer.phone}"></span></p>
+                        <p class="mb-0"><strong>Cidade:</strong> <span th:text="${order.customer.city + '/' + order.customer.state}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Warranty Claim Modal -->
+<div class="modal fade" id="warrantyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form th:action="@{/my-services/{id}/claim-warranty(id=${order.id})}" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-shield-check me-2"></i>Solicitar Garantia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Descreva o problema <span class="text-danger">*</span></label>
+                        <textarea name="reason" class="form-control" rows="4" required placeholder="Explique detalhadamente o problema encontrado com o serviço realizado..."></textarea>
+                    </div>
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Após a solicitação, nossa equipe entrará em contato para agendar uma avaliação do serviço.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-2"></i>Confirmar Solicitação
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
