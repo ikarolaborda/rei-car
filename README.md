@@ -55,6 +55,9 @@ Este projeto foi desenvolvido aplicando padrões de mercado para garantir **manu
 
 ## 📈 Funcionalidades Implementadas
 
+- **Gestão de Utilizadores** (Com permissoes: ADMIN, MECANICO e USER)
+- **Configuração de Política de Garantia** (Garantia de serviço em quantidade de dias) 
+
 ### 🧠 Triagem de Entrada Inteligente
 Fluxos distintos de abertura de Ordens de Serviço (OS):
 
@@ -105,7 +108,7 @@ A estrutura já está preparada para inclusão de **JUnit 5 e Mockito**, conform
 - [ ] **Testes Automatizados**  
   Implementação de cobertura com JUnit 5 e Mockito.
 
-- [ ] **Dockerização**  
+- [X] **Dockerização**  
   Criação de ambiente orquestrado com Docker Compose.
 
 - [ ] **Rich Domain Model**  
